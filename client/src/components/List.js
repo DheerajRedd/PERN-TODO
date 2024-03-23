@@ -1,4 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
+import Edit from "./Edit";
 
 const List = () => {
   const [todos, setTodos] = useState([]);
@@ -16,22 +17,42 @@ const List = () => {
   useEffect(() => {
     getTodos();
   }, []);
+
+  const deleteTodo = async (id) => {
+    try {
+      const deleteTodo = await fetch(`http://localhost:3005/todos/${id}`, {
+        method: "DELETE",
+      });
+      setTodos(todos.filter((todo) => todo.todo_id !== id));
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
   return (
     <Fragment>
-      <table class="table mt-5 text-center">
+      <table className="table mt-5 text-center">
         <thead>
-          <tr>
-            <th>Description</th>
-            <th>Edit</th>
-            <th>Delete</th>
+          <tr className="font-weight-bold">
+            <td>Description</td>
+            <td>Edit</td>
+            <td>Delete</td>
           </tr>
         </thead>
         <tbody>
           {todos.map((todo) => (
-            <tr>
+            <tr key={todo.todo_id}>
               <td>{todo.description}</td>
-              <td>Edit</td>
-              <td>Delete</td>
+              <td>
+                <Edit todo={todo} />
+              </td>
+              <td>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => deleteTodo(todo.todo_id)}
+                >
+                  Remove
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
